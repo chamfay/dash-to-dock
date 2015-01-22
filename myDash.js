@@ -1095,10 +1095,12 @@ const myAppIcon = new Lang.Class({
 
         this._stateChangedId = this.app.connect('windows-changed',
                                                 Lang.bind(this,
-                                                          this._updateRunningStyle));
+                                                          this.onWindowsChanged));
         this._focuseAppChangeId = tracker.connect('notify::focus-app',
                                                 Lang.bind(this,
                                                           this._onFocusAppChanged));
+        this.actor.connect('allocation-changed',
+                           Lang.bind(this, this._updateIconGeometry));
 
          /* To keep compatibility with 3.14.0 and 3.14.1
          * after upstream commit 24c0a1a1d458c8d1ba1b9d3e728a27d347f7833f
@@ -1118,6 +1120,26 @@ const myAppIcon = new Lang.Class({
         // stateChangedId is already handled by parent)
         if(this._focusAppId>0)
             tracker.disconnect(this._focusAppId);
+    },
+
+    onWindowsChanged: function() {
+
+      this._updateRunningStyle();
+      this._updateIconGeometry(); 
+
+    },
+
+    _updateIconGeometry: function() {
+
+        let rect = new Meta.Rectangle();
+
+        [rect.x, rect.y] = this.actor.get_transformed_position();
+        [rect.width, rect.height] = this.actor.get_transformed_size();
+
+        let windows = this.app.get_windows();
+        windows.forEach(function(w) {
+            w.set_icon_geometry(rect);
+        });
     },
 
     _updateRunningStyle: function() {
