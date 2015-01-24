@@ -92,7 +92,9 @@ const DashSlideContainer = new Lang.Class({
 
     vfunc_allocate: function(box, flags) {
 
-        this.set_allocation(box, flags);
+        global.log('** ALOCATE **   ' + box.x1 +  ' ' +  box.x2 + ' ' + box.y1 +  ' ' +box.y2 + ' '  + flags);
+
+        this.set_allocation(box, Clutter.AllocationFlags.ABSOLUTE_ORIGIN_CHANGED);
 
         if (this._child == null)
             return;
@@ -127,7 +129,7 @@ const DashSlideContainer = new Lang.Class({
             childBox.y2 = slideoutSize + this._slidex*(childHeight - slideoutSize);
         }
 
-        this._child.allocate(childBox, flags);
+        this._child.allocate(childBox, Clutter.AllocationFlags.ABSOLUTE_ORIGIN_CHANGED);
         this._child.set_clip(-childBox.x1, -childBox.y1,
                              -childBox.x1+availWidth,-childBox.y1 + availHeight);
     },
