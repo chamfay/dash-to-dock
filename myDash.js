@@ -529,6 +529,7 @@ const myDash = new Lang.Class({
                         }));
 
         let item = new myDashItemContainer(this._settings);
+        item.connect('allocation-changed', Lang.bind(appIcon, appIcon._updateIconGeometry) );
         item.setChild(appIcon.actor);
 
         // Override default AppIcon label_actor, now the
@@ -1099,8 +1100,6 @@ const myAppIcon = new Lang.Class({
         this._focuseAppChangeId = tracker.connect('notify::focus-app',
                                                 Lang.bind(this,
                                                           this._onFocusAppChanged));
-        this.actor.connect('allocation-changed',
-                           Lang.bind(this, this._updateIconGeometry));
 
          /* To keep compatibility with 3.14.0 and 3.14.1
          * after upstream commit 24c0a1a1d458c8d1ba1b9d3e728a27d347f7833f
@@ -1131,6 +1130,7 @@ const myAppIcon = new Lang.Class({
 
     _updateIconGeometry: function() {
 
+        global.log('UPDATE');
         let rect = new Meta.Rectangle();
 
         [rect.x, rect.y] = this.actor.get_transformed_position();
@@ -1140,6 +1140,8 @@ const myAppIcon = new Lang.Class({
         windows.forEach(function(w) {
             w.set_icon_geometry(rect);
         });
+
+        global.log(rect.x + ' ' + rect.y + ' ' + rect.width + ' ' + rect.height);
     },
 
     _updateRunningStyle: function() {
